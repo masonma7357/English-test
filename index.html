@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeakUp - English AI Partner</title>
+    <!-- Use Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <!-- Ionicons for modern icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <ion-icon name="sparkles"></ion-icon>
+                <h2>SpeakUp</h2>
+            </div>
+
+            <!-- Gemini API Key Setup -->
+            <div class="sidebar-settings">
+                <h4>🔑 Gemini API 設定</h4>
+                <div class="input-group">
+                    <input type="password" id="geminiApiKey" placeholder="輸入您的 Google Gemini API Key">
+                    <button id="saveApiKeyBtn" class="action-btn">儲存金鑰</button>
+                    <small id="apiKeyStatus" class="status-msg"></small>
+                </div>
+            </div>
+
+            <!-- New Custom Setting Form -->
+            <div class="sidebar-settings">
+                <h4>🚀 個人專屬情境</h4>
+                <div class="input-group">
+                    <input type="text" id="userProf" placeholder="您的職業 (例如: 工程師)">
+                    <select id="userLevel">
+                        <option value="" disabled selected>您的英文程度 (Level)</option>
+                        <option value="Beginner">初級 (Beginner)</option>
+                        <option value="Intermediate">中級 (Intermediate)</option>
+                        <option value="Advanced">高級 (Advanced)</option>
+                    </select>
+                    <input type="text" id="userScenario" placeholder="想練習的場景 (例如: 機場海關)">
+                    <button id="genCustomBtn" class="action-btn">開始專屬對話</button>
+                </div>
+            </div>
+
+            <div class="daily-challenges">
+                <div class="section-header">
+                    <h3>Daily Office Challenges</h3>
+                    <button class="icon-btn refresh-btn" id="refreshScenariosBtn" title="Get new scenarios">
+                        <ion-icon name="refresh-outline"></ion-icon>
+                    </button>
+                </div>
+                <p class="subtitle">Pick a scenario to practice today</p>
+
+                <div class="challenge-list" id="challengeList">
+                    <!-- Challenges populated by JS -->
+                </div>
+
+                <button class="add-scenario-btn" id="addScenarioBtn">
+                    <ion-icon name="add-circle-outline"></ion-icon> Create Custom Scenario
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">Office Worker</span>
+                        <span class="user-level">Intermediate</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="ai-profile">
+                    <div class="ai-avatar">AI</div>
+                    <div class="ai-details">
+                        <h2>AI English Coach</h2>
+                        <span class="status online">Online</span>
+                    </div>
+                </div>
+                <div class="current-context" id="currentContextDisplay">
+                    Select a challenge to begin!
+                </div>
+            </header>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="message ai-message welcome-msg">
+                    <div class="bubble">
+                        Hello! Let's practice some English today. Choose a daily scenario from the left to start!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area-wrapper">
+                <div class="input-area">
+                    <button class="icon-btn mic-btn" id="micBtn" title="Click to speak">
+                        <ion-icon name="mic-outline"></ion-icon>
+                    </button>
+                    <input type="text" id="textInput" placeholder="Type or speak your answer..." autocomplete="off">
+                    <button class="icon-btn send-btn" id="sendBtn" title="Send message">
+                        <ion-icon name="paper-plane-outline"></ion-icon>
+                    </button>
+                </div>
+                <!-- Status for voice dictation -->
+                <div class="recording-status" id="recordingStatus">Listening...</div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Error Correction Modal/Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered!'))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
