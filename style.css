@@ -306,6 +306,36 @@ body {
 .ai-message .bubble {
     background: var(--msg-ai);
     border-bottom-left-radius: 4px;
+    position: relative;
+    padding-right: 45px; /* Make space for the button */
+}
+
+.speaker-btn {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-muted);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+}
+
+.speaker-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.speaker-btn:active {
+    transform: scale(0.9);
 }
 
 /* Input Area */

@@ -269,7 +269,28 @@ async function handleSend() {
 function appendMessage(text, sender) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${sender}-message`;
-    msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+    
+    // Create bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.innerHTML = text;
+
+    // Add speaker button for AI messages
+    if (sender === 'ai') {
+        const speakerBtn = document.createElement('button');
+        speakerBtn.className = 'speaker-btn';
+        speakerBtn.innerHTML = '<ion-icon name="volume-high-outline"></ion-icon>';
+        
+        // Clean text for speech (remove HTML tags if any)
+        const speechText = text.replace(/<[^>]*>/g, '').replace(/\(Translating...\)/g, '');
+        speakerBtn.onclick = (e) => {
+            e.stopPropagation();
+            speakText(speechText);
+        };
+        bubble.appendChild(speakerBtn);
+    }
+
+    msgDiv.appendChild(bubble);
     messagesContainer.appendChild(msgDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -496,17 +517,30 @@ function speakText(text) {
     // Stop any ongoing speech
     window.speechSynthesis.cancel();
     
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    const utterance = new SynthesisUtterance(text);
+    // On some mobile devices, SynthesisUtterance is picky
+    const speechUtterance = window.SpeechSynthesisUtterance ? new SpeechSynthesisUtterance(text) : utterance;
     
-    // Optional: Try to find a nice female/male voice if available
+    speechUtterance.lang = 'en-US';
+    speechUtterance.rate = 0.9; // Slightly slower for better clarity
+    speechUtterance.pitch = 1.0;
+    
+    // Get voices and try to pick a good one
     const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(voice => voice.lang.includes('en-US') && voice.name.includes('Google'));
-    if (preferredVoice) utterance.voice = preferredVoice;
+    if (voices.length > 0) {
+        const preferredVoice = voices.find(v => v.lang.includes('en-US') && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Premium')));
+        if (preferredVoice) speechUtterance.voice = preferredVoice;
+    }
 
-    window.speechSynthesis.speak(utterance);
+    // iOS Safari requires a user gesture for the first speak, 
+    // and subsequent ones work better if triggered directly.
+    window.speechSynthesis.speak(speechUtterance);
+}
+
+// Fallback for some environments
+function SynthesisUtterance(text) {
+    this.text = text;
+    this.lang = 'en-US';
 }
 
 // Wait for voices to load
